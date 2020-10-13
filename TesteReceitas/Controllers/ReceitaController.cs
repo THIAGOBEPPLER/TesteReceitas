@@ -114,7 +114,7 @@ namespace TesteReceitas.Controllers
             var query =
                   (from r in bd.Receitas
                    where r.Id == id
-                   select r).FirstOrDefault();
+                   select r).SingleOrDefault();
 
             if (query == null)
                 return BadRequest("Receita nao encontrada");
