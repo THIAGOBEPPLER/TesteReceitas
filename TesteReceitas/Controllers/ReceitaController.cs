@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch.Internal;
 using Microsoft.AspNetCore.Mvc;
 using TesteReceitas.Data;
 using TesteReceitas.Entities;
@@ -20,17 +21,30 @@ namespace TesteReceitas.Controllers
         public ActionResult<string> Adiciona([FromBody] NovaReceitaModel request)
         {
             var receita = new Receita();
+            int[] ingredientes = request.Ingredientes;
 
             receita.Nome = request.Nome;
             receita.Categoria = request.Categoria;
             receita.Descricao = request.Descricao;
             receita.Duracao = request.Duracao;
-            receita.Ingredientes = request.Ingredientes;
+            ingredientes = request.Ingredientes;
 
             bd.Receitas.Add(receita);
             bd.SaveChanges();
 
-            return Ok("Cadastrado");
+            // receita.Id;
+
+            var ri = new ReceitaIngrediente();
+            ri.ReceitaId = receita.Id;
+            foreach (int i in ingredientes)
+            {
+                ri.IngredienteId = i;
+                bd.ReceitasIngredientes.Add(ri);
+                bd.SaveChanges();
+            }
+            
+
+            return Ok("Cadastrado.");
         }
 
         [HttpPut("{id}")]
@@ -44,68 +58,111 @@ namespace TesteReceitas.Controllers
                 select r).SingleOrDefault();
 
             if (query == null)
-                return BadRequest("Nao cadastrado.");
+                return BadRequest("Receita nao encontrada.");
 
-            var receita = new Receita();
+            var receita = query;
+            int[] ingredientes = request.Ingredientes;
+
+
 
             receita.Nome = request.Nome;
             receita.Categoria = request.Categoria;
             receita.Descricao = request.Descricao;
             receita.Duracao = request.Duracao;
-            receita.Ingredientes = request.Ingredientes;
 
             bd.Receitas.Update(receita);
             bd.SaveChanges();
 
-            return Ok("Cadastrado");
+
+            var limpa = (from r in bd.ReceitasIngredientes
+                     where r.ReceitaId == id
+                     select r);
+
+            bd.ReceitasIngredientes.RemoveRange(limpa);
+            bd.SaveChanges();
+
+            var ri = new ReceitaIngrediente();
+            ri.ReceitaId = receita.Id;
+            foreach (int i in ingredientes)
+            {
+                ri.IngredienteId = i;
+                bd.ReceitasIngredientes.Add(ri);
+                bd.SaveChanges();
+            }
+
+
+
+
+            return Ok("Editado.");
         }
-        [HttpGet("{tipo}")]
-        public ActionResult<ReceitaModel[]> Busca([FromBody] BuscaReceitaModel request)
+        [HttpGet()]
+        public ActionResult<ReceitaModel[]> Busca(BuscaReceitaModel request)
         {
+            string nome = Request.Query["nome"];
+            string categoria = Request.Query["categoria"];
 
-            var tipo = request.Tipo;
-            var pesquisa = request.Pesquisa;
+            // var lista = new List<in>;
 
-            if (tipo == "Categoria")
+            if (nome == "" && categoria == "")
+            {
+                var query =
+               (from r in bd.Receitas
+                join ri in bd.ReceitasIngredientes on r.Id equals ri.ReceitaId
+                where r.Id == ri.ReceitaId
+                select new
+                {
+                    Id = r.Id,
+                    Nome = r.Nome,
+                    Categoria = r.Categoria,
+                    Descricao = r.Descricao,
+                    Duracao = r.Duracao,
+                    Ingredientes = ri.Ingrediente.Id
+                }) ;
+                // group aluno by aluno.Curso into cursoGrupo
+                return Ok(query);
+            }
+
+            // join v in bd.Veiculos on p.VeiculoPlaca equals v.Placa
+
+            if (nome == "Categoria")
             {
 
                 var query =
                    (from r in bd.Receitas
-                    where r.Categoria == pesquisa
+                    where r.Categoria == "pesquisa"
                     select new ReceitaModel{ 
                         Id = r.Id, 
                         Nome = r.Nome, 
                         Categoria = r.Categoria, 
                         Descricao = r.Descricao, 
                         Duracao = r.Duracao, 
-                        Ingredientes = r.Ingredientes 
+                        // Ingredientes = r.Ingredientes 
                     }).ToList();
 
 
                 return Ok(query);
             }
                 
-            else if (tipo == "Nome")
+            else if (nome == "Nome")
             {
                 var query =
                    (from r in bd.Receitas
-                    where  r.Categoria.Contains(pesquisa) 
+                    where  r.Nome.Contains("pesquisa") 
                     select new ReceitaModel { 
                         Id = r.Id, 
                         Nome = r.Nome, 
                         Categoria = r.Categoria, 
                         Descricao = r.Descricao, 
                         Duracao = r.Duracao, 
-                        Ingredientes = r.Ingredientes 
+                        // Ingredientes = r.Ingredientes 
                     }).ToList();
-
 
 
                 return Ok(query);
             }
 
             else
-                return BadRequest("Tipo nao encontrado");
+                return BadRequest("Tipo nao encontrado.");
         }
 
         [HttpDelete("{id}")]
@@ -117,7 +174,7 @@ namespace TesteReceitas.Controllers
                    select r).SingleOrDefault();
 
             if (query == null)
-                return BadRequest("Receita nao encontrada");
+                return BadRequest("Receita nao encontrada.");
 
             var receita = query;
 
@@ -125,7 +182,7 @@ namespace TesteReceitas.Controllers
             bd.SaveChanges();
 
 
-            return Ok("Receita deletada");
+            return Ok("Receita deletada.");
         }
     }
 }

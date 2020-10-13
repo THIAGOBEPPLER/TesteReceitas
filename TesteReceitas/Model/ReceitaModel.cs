@@ -12,6 +12,6 @@ namespace TesteReceitas.Model
         public string Categoria { get; set; }
         public string Descricao { get; set; }
         public int Duracao { get; set; }
-        public string Ingredientes { get; set; }
+        public int[] Ingredientes { get; set; }
     }
 }

@@ -14,6 +14,7 @@ namespace TesteReceitas.Entities
         public string Categoria { get; set; }
         public string Descricao { get; set; }
         public int Duracao { get; set; }
-        public string Ingredientes { get; set; }
+        // public List<Ingrediente> Ingredientes { get; set; }
+
     }
 }
