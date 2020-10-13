@@ -109,6 +109,27 @@ namespace TesteReceitas.Controllers
                (from r in bd.Receitas
                 join ri in bd.ReceitasIngredientes on r.Id equals ri.ReceitaId
                 where r.Id == ri.ReceitaId
+                select new 
+                {
+                    Id = r.Id,
+                    Nome = r.Nome,
+                    Categoria = r.Categoria,
+                    Descricao = r.Descricao,
+                    Duracao = r.Duracao,
+                    Ingredientes = ri.Ingrediente
+                }).ToList() ;
+
+        
+
+                return Ok(query);
+            }
+
+            else
+            {
+                var query =
+               (from r in bd.Receitas
+                join ri in bd.ReceitasIngredientes on r.Id equals ri.ReceitaId
+                where r.Categoria == categoria || r.Nome.Contains(nome)
                 select new
                 {
                     Id = r.Id,
@@ -116,13 +137,14 @@ namespace TesteReceitas.Controllers
                     Categoria = r.Categoria,
                     Descricao = r.Descricao,
                     Duracao = r.Duracao,
-                    Ingredientes = ri.Ingrediente.Id
-                }) ;
-                // group aluno by aluno.Curso into cursoGrupo
+                    Ingredientes = ri.Ingrediente
+                }).ToList();
+
+
+
                 return Ok(query);
             }
 
-            // join v in bd.Veiculos on p.VeiculoPlaca equals v.Placa
 
             if (nome == "Categoria")
             {

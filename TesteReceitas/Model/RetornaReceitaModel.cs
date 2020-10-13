@@ -6,12 +6,13 @@ using TesteReceitas.Entities;
 
 namespace TesteReceitas.Model
 {
-    public class NovaReceitaModel
+    public class RetornaReceitaModel
     {
+        public int Id { get; set; }
         public string Nome { get; set; }
         public string Categoria { get; set; }
         public string Descricao { get; set; }
         public int Duracao { get; set; }
-        public int[] Ingredientes { get; set; }
+        public List<Ingrediente> Ingredientes { get; set; }
     }
 }
