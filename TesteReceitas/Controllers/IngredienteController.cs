@@ -44,7 +44,30 @@ namespace TesteReceitas.Controllers
                 listaIngredientes.Add(int.Parse(i));
             }
 
-                return (arrayIngredientes);
+            List<Receita> listaReceitas = new List<Receita>();
+
+            foreach (var i in listaIngredientes)
+            {
+                var query =
+                  (from r in bd.Receitas
+                   join ri in bd.ReceitasIngredientes on r.Id equals ri.ReceitaId
+                   where ri.IngredienteId == i
+                   select r).ToList();
+
+                foreach (var q in query)
+                {
+                    listaReceitas.Add(q);
+                }
+            }
+
+
+            var listaDeRepetidos = listaReceitas.GroupBy(x => x)
+                    .Where(x => x.Count() == arrayIngredientes.Length)
+                    .Select(x => x.Key)
+                    .ToList();
+
+
+            return (listaDeRepetidos);
         
         }
     }
