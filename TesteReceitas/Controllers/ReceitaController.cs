@@ -146,45 +146,45 @@ namespace TesteReceitas.Controllers
             }
 
 
-            if (nome == "Categoria")
-            {
+            //if (nome == "Categoria")
+            //{
 
-                var query =
-                   (from r in bd.Receitas
-                    where r.Categoria == "pesquisa"
-                    select new ReceitaModel{ 
-                        Id = r.Id, 
-                        Nome = r.Nome, 
-                        Categoria = r.Categoria, 
-                        Descricao = r.Descricao, 
-                        Duracao = r.Duracao, 
-                        // Ingredientes = r.Ingredientes 
-                    }).ToList();
+            //    var query =
+            //       (from r in bd.Receitas
+            //        where r.Categoria == "pesquisa"
+            //        select new ReceitaModel{ 
+            //            Id = r.Id, 
+            //            Nome = r.Nome, 
+            //            Categoria = r.Categoria, 
+            //            Descricao = r.Descricao, 
+            //            Duracao = r.Duracao, 
+            //            // Ingredientes = r.Ingredientes 
+            //        }).ToList();
 
 
-                return Ok(query);
-            }
+            //    return Ok(query);
+            //}
                 
-            else if (nome == "Nome")
-            {
-                var query =
-                   (from r in bd.Receitas
-                    where  r.Nome.Contains("pesquisa") 
-                    select new ReceitaModel { 
-                        Id = r.Id, 
-                        Nome = r.Nome, 
-                        Categoria = r.Categoria, 
-                        Descricao = r.Descricao, 
-                        Duracao = r.Duracao, 
-                        // Ingredientes = r.Ingredientes 
-                    }).ToList();
+            //else if (nome == "Nome")
+            //{
+            //    var query =
+            //       (from r in bd.Receitas
+            //        where  r.Nome.Contains("pesquisa") 
+            //        select new ReceitaModel { 
+            //            Id = r.Id, 
+            //            Nome = r.Nome, 
+            //            Categoria = r.Categoria, 
+            //            Descricao = r.Descricao, 
+            //            Duracao = r.Duracao, 
+            //            // Ingredientes = r.Ingredientes 
+            //        }).ToList();
 
 
-                return Ok(query);
-            }
+            //    return Ok(query);
+            //}
 
-            else
-                return BadRequest("Tipo nao encontrado.");
+            //else
+            //    return BadRequest("Tipo nao encontrado.");
         }
 
         [HttpDelete("{id}")]
